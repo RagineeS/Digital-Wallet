@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Wallet - Deposit</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+  <style>
+    /* Base reset and font */
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      margin: 0;
+      padding: 0;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    /* Container */
+    .container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 16px 40px rgba(37, 117, 252, 0.25);
+      max-width: 440px;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      background: #2575fc;
+      color: #fff;
+      padding: 1.5rem 1.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 1.3rem;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 12px rgba(37, 117, 252, 0.3);
+    }
+    .back-btn {
+      color: #e0e7ff;
+      font-size: 1.4rem;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .back-btn:hover {
+      color: #c1d1ff;
+    }
+
+    /* Content */
+    .content {
+      padding: 2rem 2.2rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Balance Card */
+    .balance-card {
+      background: #e9f0ff;
+      border-radius: 14px;
+      padding: 1.3rem 1.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(37, 117, 252, 0.12);
+      color: #2575fc;
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: 0.03em;
+      user-select: none;
+    }
+    .balance-card .currency {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #5169c9;
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Form Groups */
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.6rem;
+      display: block;
+      letter-spacing: 0.03em;
+      user-select: none;
+    }
+
+    input[type='number'],
+    input[type='text'],
+    select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      border: 2px solid #d0dbff;
+      transition: border-color 0.3s ease;
+      box-shadow: inset 0 0 6px #dbe6ff;
+      outline-offset: 2px;
+    }
+    input[type='number']:focus,
+    input[type='text']:focus,
+    select:focus {
+      border-color: #2575fc;
+      box-shadow: 0 0 10px rgba(37, 117, 252, 0.5);
+      outline: none;
+    }
+
+    /* Currency Symbol inside Amount input */
+    .amount-wrapper {
+      position: relative;
+    }
+    .amount-wrapper input[type='number'] {
+      padding-left: 3rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .currency-symbol {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.3rem;
+      color: #2575fc;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Deposit Methods */
+    .method-options {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.7rem;
+      gap: 1rem;
+    }
+    .method {
+      flex-grow: 1;
+      background: #e5eaff;
+      border-radius: 14px;
+      padding: 1.1rem 0;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: #5169c9;
+      transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 3px 6px rgba(81, 105, 201, 0.15);
+      user-select: none;
+      border: 2px solid transparent;
+    }
+    .method i {
+      font-size: 1.8rem;
+      margin-bottom: 0.6rem;
+      display: block;
+      color: inherit;
+      transition: transform 0.3s ease;
+    }
+    .method:hover {
+      background: #c3d2ff;
+      color: #1a3ed1;
+      box-shadow: 0 8px 18px rgba(37, 117, 252, 0.3);
+    }
+    .method.active {
+      background: #2575fc;
+      color: white;
+      box-shadow: 0 12px 24px rgba(37, 117, 252, 0.6);
+      border-color: #1841d5;
+    }
+    .method.active i {
+      transform: scale(1.2);
+      color: white;
+    }
+
+    /* Deposit Button */
+    button {
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      border: none;
+      border-radius: 16px;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+      padding: 1.2rem 0;
+      width: 100%;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(101, 41, 255, 0.3);
+      transition: background 0.4s ease, box-shadow 0.4s ease;
+      user-select: none;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #5126e0, #1948d8);
+      box-shadow: 0 14px 38px rgba(73, 35, 255, 0.5);
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* Help Link */
+    .help-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.8rem;
+      font-weight: 600;
+      color: #2575fc;
+      text-decoration: none;
+      user-select: none;
+      letter-spacing: 0.05em;
+      transition: color 0.3s ease;
+    }
+    .help-link:hover {
+      color: #1841d5;
+      text-decoration: underline;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.8rem 0;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+      user-select: none;
+    }
+    .nav-item {
+      color: #7a7a9d;
+      text-align: center;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      flex-grow: 1;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+    .nav-item i {
+      font-size: 1.3rem;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+    .nav-item.active,
+    .nav-item:hover {
+      color: #2575fc;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container {
+        max-width: 100%;
+        border-radius: 0;
+        height: 100vh;
+      }
+      .content {
+        padding: 1.5rem 1.5rem;
+      }
+      .method-options {
+        flex-wrap: wrap;
+        gap: 0.8rem;
+      }
+      .method {
+        min-width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="Deposit funds to wallet">
+    <header class="header">
+      <a href="dashboard.html" class="back-btn" aria-label="Back to dashboard"><i class="fas fa-arrow-left"></i></a>
+      Deposit Funds
+      <div style="width: 1.4rem;"></div> <!-- spacer -->
+    </header>
+
+    <section class="content">
+      <div class="balance-card" aria-live="polite" aria-atomic="true">
+        <div class="balance" id="balanceDisplay">₹12,345.67</div>
+        <div class="currency">Current Balance</div>
+      </div>
+
+      <div class="form-group amount-wrapper">
+        <label for="amount">Amount to Deposit</label>
+        <span class="currency-symbol" id="currencySymbol">₹</span>
+        <input
+          type="number"
+          id="amount"
+          name="amount"
+          placeholder="Enter amount"
+          min="0.01"
+          step="0.01"
+          aria-required="true"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="currency">Currency</label>
+        <select id="currency" name="currency" aria-required="true" autocomplete="off">
+          <option value="INR" selected>INR (₹)</option>
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="JPY">JPY (¥)</option>
+        </select>
+      </div>
+
+      <fieldset class="method-options" role="radiogroup" aria-label="Select deposit method">
+        <legend class="sr-only">Deposit Method</legend>
+        <div
+          class="method active"
+          role="radio"
+          tabindex="0"
+          aria-checked="true"
+          data-method="bank"
+        >
+          <i class="fas fa-university"></i>
+          <div>Bank</div>
+        </div>
+        <div
+          class="method"
+          role="radio"
+          tabindex="-1"
+          aria-checked="false"
+          data-method="upi"
+        >
+          <i class="fas fa-mobile-alt"></i>
+          <div>UPI</div>
+        </div>
+        <div
+          class="method"
+          role="radio"
+          tabindex="-1"
+          aria-checked="false"
+          data-method="card"
+        >
+          <i class="fas fa-credit-card"></i>
+          <div>Card</div>
+        </div>
+      </fieldset>
+
+      <div class="form-group">
+        <label for="details">Payment Details</label>
+        <input
+          type="text"
+          id="details"
+          name="details"
+          placeholder="Enter bank account, UPI ID, or card number"
+          aria-required="true"
+          autocomplete="off"
+        />
+      </div>
+
+      <button id="depositBtn" type="button" aria-label="Make a deposit">
+        Deposit
+      </button>
+
+      <a href="help.html" class="help-link">Need help? Contact Support</a>
+    </section>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <div class="nav-item" onclick="location.href='dashboard.html'" role="link" tabindex="0">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </div>
+      <div class="nav-item" onclick="location.href='history.html'" role="link" tabindex="0">
+        <i class="fas fa-history"></i>
+        <span>History</span>
+      </div>
+      <!-- <div class="nav-item" onclick="location.href='receive.html'" role="link" tabindex="0">
+        <i class="fas fa-qrcode"></i>
+        <span>Receive</span>
+      </div>
+      <div class="nav-item" onclick="location.href='profile.html'" role="link" tabindex="0">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </div> -->
+    </nav>
+  </div>
+  <script>
+  // Elements
+  const methodElements = document.querySelectorAll('.method');
+  const currencySelect = document.getElementById('currency');
+  const currencySymbolSpan = document.getElementById('currencySymbol');
+  const amountInput = document.getElementById('amount');
+  const depositBtn = document.getElementById('depositBtn');
+
+  // Map currency code to symbol
+  const currencySymbols = {
+    INR: '₹',
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
+    JPY: '¥',
+  };
+
+  // Update symbol on currency change
+  currencySelect.addEventListener('change', () => {
+    const selected = currencySelect.value;
+    currencySymbolSpan.textContent = currencySymbols[selected] || '';
+    amountInput.value = '';
+  });
+
+  // Method selection with keyboard support
+  methodElements.forEach((method, idx) => {
+    method.addEventListener('click', () => selectMethod(method));
+    method.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectMethod(method);
+        method.focus();
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const nextIdx = (idx + 1) % methodElements.length;
+        methodElements[nextIdx].focus();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prevIdx = (idx - 1 + methodElements.length) % methodElements.length;
+        methodElements[prevIdx].focus();
+      }
+    });
+  });
+
+  function selectMethod(selectedMethod) {
+    methodElements.forEach(m => {
+      m.classList.remove('active');
+      m.setAttribute('aria-checked', 'false');
+      m.setAttribute('tabindex', '-1');
+    });
+    selectedMethod.classList.add('active');
+    selectedMethod.setAttribute('aria-checked', 'true');
+    selectedMethod.setAttribute('tabindex', '0');
+  }
+
+  // Deposit button action - validation & backend integration
+  depositBtn.addEventListener('click', async () => {
+    const amount = parseFloat(amountInput.value);
+    const currency = currencySelect.value;
+    const paymentDetails = document.getElementById('details').value.trim();
+    const selectedMethodElement = document.querySelector('.method.active');
+    const selectedMethod = selectedMethodElement ? selectedMethodElement.dataset.method : null;
+    const email = localStorage.getItem('userEmail'); // Must be set after login
+
+    // Validation
+    if (!email) {
+      alert('You must be logged in to deposit.');
+      return;
+    }
+    if (!selectedMethod) {
+      alert('Please select a payment method.');
+      return;
+    }
+    if (isNaN(amount) || amount <= 0) {
+      alert('Please enter a valid amount greater than zero.');
+      amountInput.focus();
+      return;
+    }
+    if (!paymentDetails) {
+      alert('Please enter your payment details.');
+      document.getElementById('details').focus();
+      return;
+    }
+
+    // Call backend API to deposit
+    try {
+      const res = await fetch('/wallet/deposit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          amount,
+          currency,
+          method: selectedMethod,
+          details: paymentDetails
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Deposit successful! New balance: ' + currencySymbols[currency] + data.balance.toFixed(2));
+        // Optionally update balance display if you have one
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        if (balanceDisplay) {
+          balanceDisplay.textContent = currencySymbols[currency] + data.balance.toFixed(2);
+        }
+        amountInput.value = '';
+        document.getElementById('details').value = '';
+      } else {
+        alert(data.message || 'Deposit failed');
+      }
+    } catch (err) {
+      alert('Server error. Please try again later.');
+    }
+  });
+</script>
+</body>
+</html>

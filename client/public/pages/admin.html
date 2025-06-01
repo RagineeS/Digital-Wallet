@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Wallet - Admin Panel</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #4a6cf7;
+      --primary-light: #e9e9f5;
+      --primary-dark: #3a5ce8;
+      --text: #333;
+      --text-light: #666;
+      --background: #f5f5fa;
+      --white: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+      --border-radius: 16px;
+      --border-radius-sm: 8px;
+      --transition: all 0.3s ease;
+
+      /* Dark mode colors */
+      --bg-dark: #1e1e2f;
+      --text-dark: #ddd;
+      --text-light-dark: #aaa;
+      --card-bg-dark: #2a2a40;
+      --primary-dark-alt: #557bff;
+    }
+
+    /* Dark mode active */
+    body.dark {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+    body.dark .container {
+      background: var(--card-bg-dark);
+      box-shadow: none;
+    }
+    body.dark .header {
+      background: var(--primary-dark-alt);
+      color: var(--white);
+    }
+    body.dark .admin-badge {
+      background: var(--white);
+      color: var(--primary-dark-alt);
+      box-shadow: none;
+    }
+    body.dark .stat-card {
+      background: var(--card-bg-dark);
+      box-shadow: none;
+      color: var(--text-light-dark);
+    }
+    body.dark .stat-value {
+      color: var(--primary-dark-alt);
+    }
+    body.dark .admin-section {
+      background: var(--card-bg-dark);
+      box-shadow: none;
+    }
+    body.dark .admin-item {
+      border-bottom: 1px solid #444;
+      color: var(--text-light-dark);
+    }
+    body.dark .admin-item:hover {
+      background: #3b3b5a;
+    }
+    body.dark .admin-item .icon {
+      background: var(--primary-dark-alt);
+      color: var(--white);
+    }
+    body.dark .nav-item {
+      color: var(--text-light-dark);
+    }
+    body.dark .nav-item.active {
+      color: var(--primary-dark-alt);
+    }
+    body.dark .bottom-nav {
+      background: var(--card-bg-dark);
+      box-shadow: none;
+    }
+    body.dark .status-dot {
+      box-shadow: 0 0 8px rgba(255 255 255 / 0.7);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--white);
+      min-height: 100vh;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      border-radius: var(--border-radius);
+      transition: background-color 0.3s ease;
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      width: 220px;
+      background: var(--primary);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 0;
+      border-top-left-radius: var(--border-radius);
+      border-bottom-left-radius: var(--border-radius);
+    }
+    .sidebar h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 2rem;
+      user-select: none;
+    }
+    .sidebar nav {
+      flex: 1;
+    }
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      color: var(--white);
+      text-decoration: none;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    .sidebar nav a i {
+      margin-right: 1rem;
+      font-size: 1.2rem;
+      width: 22px;
+      text-align: center;
+    }
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background-color: var(--primary-dark);
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1;
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 1.5rem;
+    }
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .dark-mode-toggle {
+      cursor: pointer;
+      background: var(--primary-light);
+      border-radius: 50px;
+      padding: 0.3rem 0.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      user-select: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    body.dark .dark-mode-toggle {
+      background: var(--primary-dark-alt);
+      color: var(--white);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      padding: 1rem 1.5rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: var(--transition);
+      user-select: none;
+    }
+    .stat-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.3rem;
+      transition: color 0.3s ease;
+    }
+    .stat-label {
+      color: var(--text-light);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    /* Admin tools section */
+    .admin-section {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 2rem;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    .admin-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .admin-item:last-child {
+      border-bottom: none;
+    }
+    .admin-item:hover {
+      background: var(--primary-light);
+    }
+    .admin-item .icon {
+      width: 42px;
+      height: 42px;
+      background: var(--primary-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 1.3rem;
+      margin-right: 1rem;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .admin-item .info {
+      flex: 1;
+    }
+    .admin-item .title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.2rem;
+      color: var(--text);
+      transition: color 0.3s ease;
+    }
+    .admin-item .subtitle {
+      color: var(--text-light);
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+    .admin-item .arrow {
+      color: var(--text-light);
+      font-size: 1.2rem;
+      transition: color 0.3s ease;
+    }
+    body.dark .admin-item:hover {
+      background: var(--primary-dark-alt);
+    }
+    body.dark .admin-item .icon {
+      background: var(--primary-dark-alt);
+      color: var(--white);
+    }
+    body.dark .admin-item .title,
+    body.dark .admin-item .subtitle,
+    body.dark .admin-item .arrow {
+      color: var(--text-light-dark);
+    }
+
+    /* Bottom nav hidden for desktop */
+    .bottom-nav {
+      display: none;
+    }
+
+    /* Charts container */
+    .charts {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .chart-card {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 1rem 1.5rem;
+      width: 100%;
+      max-width: 460px;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    body.dark .chart-card {
+      background: var(--card-bg-dark);
+    }
+
+    /* Status indicators */
+    .status-container {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      user-select: none;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text);
+      transition: color 0.3s ease;
+    }
+    body.dark .status-item {
+      color: var(--text-light-dark);
+    }
+    .status-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: gray;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s ease;
+    }
+    .status-online {
+      background: #4caf50;
+      box-shadow: 0 0 8px #4caf50aa;
+    }
+    .status-warning {
+      background: #fbc02d;
+      box-shadow: 0 0 8px #fbc02daa;
+    }
+    .status-error {
+      background: #e53935;
+      box-shadow: 0 0 8px #e53935aa;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        border-radius: 0;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        padding: 0.5rem 1rem;
+        justify-content: space-around;
+        border-radius: 0;
+      }
+      .sidebar h2 {
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+      }
+      .sidebar nav a {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.9rem;
+        justify-content: center;
+        flex-direction: column;
+      }
+      .sidebar nav a i {
+        margin: 0 0 0.25rem 0;
+      }
+      .main-content {
+        padding: 1rem;
+      }
+      .charts {
+        flex-direction: column;
+        max-width: 100%;
+      }
+      .chart-card {
+        width: 100%;
+        max-width: 100%;
+      }
+      .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: var(--white);
+        box-shadow: var(--shadow);
+        border-radius: 0;
+        justify-content: space-around;
+        padding: 0.5rem 0;
+        z-index: 1000;
+      }
+      .bottom-nav a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>Wallet Admin</h2>
+      <nav>
+        <a href="#" class="nav-item active">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-users"></i> TOPUsers
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-file-alt"></i> Total Balances
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-cogs"></i> Flagged
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-user-shield"></i> Admin Panel
+        </a>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <header class="header">
+        <h1>Dashboard</h1>
+        <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">Dark Mode</button>
+      </header>
+  <section>
+    <h2 class="section-title">Flagged Transactions</h2>
+    <div id="flaggedList"></div>
+  </section>
+  <section>
+    <h2 class="section-title">Total User Balances</h2>
+    <div id="totalBalances"></div>
+  </section>
+  <section>
+    <h2 class="section-title">Top Users</h2>
+    <div id="topUsers"></div>
+  </section>
+
+      <section class="status-container" aria-label="Real-time system status indicators">
+        <div class="status-item">
+          <span class="status-dot status-online" aria-hidden="true"></span> Online
+        </div>
+        <div class="status-item">
+          <span class="status-dot status-warning" aria-hidden="true"></span> Warning
+        </div>
+        <div class="status-item">
+          <span class="status-dot status-error" aria-hidden="true"></span> Error
+        </div>
+      </section>
+
+      <section class="charts" aria-label="Graph analytics">
+        <div class="chart-card">
+          <canvas id="barChart" aria-label="Bar chart of monthly transactions" role="img"></canvas>
+        </div>
+        <div class="chart-card">
+          <canvas id="lineChart" aria-label="Line chart of active users over time" role="img"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    // Dark mode toggle logic
+    const toggleBtn = document.getElementById('darkModeToggle');
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      // Change button text accordingly
+      if (document.body.classList.contains('dark')) {
+        toggleBtn.textContent = 'Light Mode';
+      } else {
+        toggleBtn.textContent = 'Dark Mode';
+      }
+      // Optional: save preference
+      localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+    });
+
+    // Load saved dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark');
+      toggleBtn.textContent = 'Light Mode';
+    }
+
+    // Chart.js bar chart
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [
+          {
+            label: 'Transactions',
+            data: [1200, 1900, 1500, 2200, 2600, 2300, 2800],
+            backgroundColor: 'rgba(74, 108, 247, 0.7)',
+            borderRadius: 6,
+            borderSkipped: false,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 500 },
+          },
+        },
+        plugins: {
+          legend: {
+            labels: { color: getComputedStyle(document.body).color },
+          },
+        },
+      },
+    });
+
+    // Chart.js line chart
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    const lineChart = new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [
+          {
+            label: 'Active Users',
+            data: [800, 1100, 1050, 1300, 1400, 1500, 1600],
+            borderColor: 'rgba(74, 108, 247, 1)',
+            backgroundColor: 'rgba(74, 108, 247, 0.3)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: { color: getComputedStyle(document.body).color },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 200 },
+          },
+        },
+      },
+    });
+
+    // Update chart colors on theme toggle
+    const updateChartColors = () => {
+      const textColor = getComputedStyle(document.body).color;
+      barChart.options.plugins.legend.labels.color = textColor;
+      lineChart.options.plugins.legend.labels.color = textColor;
+      barChart.update();
+      lineChart.update();
+    };
+
+    // Listen for dark mode changes to update chart colors
+    const observer = new MutationObserver(() => updateChartColors());
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+fetch('/admin/flagged')
+  .then(res => res.json())
+  .then(data => {
+    const flaggedList = document.getElementById('flaggedList');
+    if (data.success && data.flagged.length) {
+      flaggedList.innerHTML = data.flagged.map(tx =>
+        `<div style="margin-bottom:1em;">
+          <b>${tx.type}</b> ₹${tx.amount} (${tx.flagReason || 'Flagged'})
+          <br>Date: ${new Date(tx.createdAt).toLocaleString()}
+          <br>User: ${tx.user}
+        </div>`
+      ).join('');
+    } else {
+      flaggedList.textContent = 'No flagged transactions found.';
+    }
+  });
+
+fetch('/admin/total-balances')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('totalBalances').textContent =
+      'Total user balances: ₹' + data.total;
+  });
+
+fetch('/admin/top-users')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('topUsers').innerHTML =
+      data.topUsers.map(u => `<div>${u.email}: ₹${u.balance}</div>`).join('');
+  });
+</script>
+</body>
+</html>

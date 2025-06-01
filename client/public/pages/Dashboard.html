@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Wallet - Dashboard</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+  <style>
+    /* Base styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f5f5fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
+      display: flex;
+      flex-direction: column;
+    }
+    /* Header */
+    .header {
+      background: #4a6cf7;
+      color: white;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(74, 108, 247, 0.4);
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4a6cf7;
+      font-weight: 700;
+      font-size: 1.25rem;
+      box-shadow: 0 0 8px rgba(74, 108, 247, 0.5);
+      user-select: none;
+    }
+    .greeting {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .current-date {
+      font-weight: 400;
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+    .notifications {
+      font-size: 1.8rem;
+      cursor: pointer;
+      position: relative;
+      color: white;
+      transition: color 0.3s ease;
+    }
+    .notifications:hover {
+      color: #cfd8ff;
+    }
+    /* Notification badge */
+    .notifications::after {
+      content: "3";
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #e74c3c;
+      color: white;
+      font-size: 0.65rem;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    }
+    /* Balance Card */
+    .balance-card {
+      background: #f9f9ff;
+      margin: 2rem 2rem 1rem;
+      padding: 2rem;
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(74, 108, 247, 0.15);
+      text-align: center;
+      position: relative;
+      overflow: visible;
+    }
+    .balance-card .balance {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #2c2c2c;
+      margin: 0.25rem 0 0.4rem;
+    }
+    .balance-card .currency {
+      color: #666;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .refresh-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: transparent;
+      border: none;
+      color: #4a6cf7;
+      cursor: pointer;
+      font-size: 1.4rem;
+      transition: color 0.3s ease;
+      outline: none;
+    }
+    .refresh-btn:hover {
+      color: #2a46c2;
+    }
+    /* Wallet Status Overview */
+    .wallet-status {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      font-weight: 600;
+      color: #555;
+      font-size: 1rem;
+    }
+    .wallet-status div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+    .wallet-status div span:first-child {
+      font-size: 1.3rem;
+      color: #4a6cf7;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      justify-content: space-between;
+      margin: 1.5rem 2rem 2rem;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .action {
+      background: #e9e9f5;
+      border-radius: 12px;
+      padding: 1.3rem 1rem;
+      flex: 1 1 120px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 4px transparent;
+      user-select: none;
+      position: relative;
+    }
+    .action:hover {
+      background: #d9d9f0;
+      box-shadow: 0 4px 12px rgba(74, 108, 247, 0.2);
+    }
+    .action i {
+      font-size: 1.8rem;
+      color: #4a6cf7;
+      margin-bottom: 0.6rem;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .action:hover i {
+      transform: scale(1.15);
+    }
+    /* Tooltip */
+    .action[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-bottom: 8px;
+      background: #4a6cf7;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      z-index: 100;
+    }
+    .action[data-tooltip]::after {
+      opacity: 0;
+    }
+
+    /* Recent Transactions */
+    .recent-transactions {
+      margin: 1rem 2rem 3rem;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #333;
+      user-select: none;
+    }
+    .transaction {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #eee;
+      font-size: 1rem;
+      transition: background 0.2s ease;
+      cursor: default;
+    }
+    .transaction:hover {
+      background: #f0f4ff;
+    }
+    .transaction:last-child {
+      border-bottom: none;
+    }
+    .transaction-type {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #444;
+      user-select: text;
+    }
+    /* Transaction icons */
+    .transaction-type i {
+      font-size: 1.2rem;
+      color: #4a6cf7;
+    }
+    .transaction-amount {
+      font-weight: 700;
+      min-width: 110px;
+      text-align: right;
+      user-select: text;
+    }
+    .positive {
+      color: #27ae60;
+    }
+    .negative {
+      color: #e74c3c;
+    }
+    .transaction-date {
+      color: #888;
+      font-size: 0.85rem;
+      margin-top: 0.15rem;
+      user-select: text;
+    }
+    .transaction-info {
+      display: flex;
+      flex-direction: column;
+      max-width: 70%;
+    }
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0;
+      box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.07);
+      z-index: 20;
+      user-select: none;
+    }
+    .nav-item {
+      text-align: center;
+      color: #666;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      flex-grow: 1;
+      user-select: none;
+    }
+    .nav-item.active,
+    .nav-item:hover {
+      color: #4a6cf7;
+    }
+    .nav-item i {
+      font-size: 1.3rem;
+      display: block;
+      margin-bottom: 3px;
+    }
+    .nav-item span {
+      font-size: 0.8rem;
+      display: block;
+    }
+    /* Responsive */
+    @media (max-width: 500px) {
+      .balance-card {
+        margin: 1.5rem 1rem 1rem;
+        padding: 1.5rem;
+      }
+      .quick-actions {
+        margin: 1rem 1rem 1.5rem;
+        gap: 1rem;
+      }
+      .wallet-status {
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+      .wallet-status div {
+        font-size: 0.95rem;
+      }
+      .recent-transactions {
+        margin: 1rem 1rem 3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="Digital Wallet Dashboard">
+    <header class="header">
+      <div class="user-info">
+        <div class="avatar" aria-label="User initials">R</div>
+        <div>
+          <div class="greeting" aria-live="polite">Hello, Raginee!</div>
+          <div class="current-date" aria-label="Current date" id="current-date"></div>
+        </div>
+      </div>
+      <button class="notifications" aria-label="Notifications with 3 unread">
+        <i class="fas fa-bell"></i>
+      </button>
+    </header>
+
+    <section class="balance-card" aria-labelledby="balance-title">
+      <button class="refresh-btn" aria-label="Refresh balance" title="Refresh Balance" onclick="refreshBalance()">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+      <div id="balance-title" class="currency">Wallet Balance</div>
+      <div class="balance" id="balance-amount">₹12,345.67</div>
+      <div class="wallet-status" aria-live="polite">
+        <div>
+          <span id="total-transactions">12</span>
+          Transactions
+        </div>
+        <div>
+          <span id="last-transaction-date">May 31, 2025</span>
+          Last Transaction
+        </div>
+      </div>
+    </section>
+
+    <nav class="quick-actions" aria-label="Quick actions">
+      <div
+        class="action"
+        data-tooltip="Deposit money to your wallet"
+        role="button"
+        tabindex="0"
+        onclick="location.href='deposit.html'"
+        onkeypress="if(event.key==='Enter') location.href='deposit.html'"
+      >
+        <i class="fas fa-rupee-sign" aria-hidden="true"></i>
+        <div>Deposit</div>
+      </div>
+      <div
+        class="action"
+        data-tooltip="Withdraw money from your wallet"
+        role="button"
+        tabindex="0"
+        onclick="location.href='withdraw.html'"
+        onkeypress="if(event.key==='Enter') location.href='withdraw.html'"
+      >
+        <i class="fas fa-money-bill-wave" aria-hidden="true"></i>
+        <div>Withdraw</div>
+      </div>
+      <div
+        class="action"
+        data-tooltip="Send money to others"
+        role="button"
+        tabindex="0"
+        onclick="location.href='send.html'"
+        onkeypress="if(event.key==='Enter') location.href='send.html'"
+      >
+        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+        <div>Send</div>
+      </div>
+      <div
+        class="action"
+        data-tooltip="Transaction History"
+        role="button"
+        tabindex="0"
+        onclick="location.href='history.html'"
+        onkeypress="if(event.key==='Enter') location.href='history.html'"
+      >
+        <i class="fas fa-list" aria-hidden="true"></i>
+        <div>History</div>
+      </div> 
+    </nav>
+
+    <section class="recent-transactions" aria-labelledby="transactions-title">
+      <div id="transactions-title" class="section-title">Recent Transactions</div>
+
+      <div class="transaction" tabindex="0" aria-label="Deposit of ₹5000 on May 28, 2025">
+        <div class="transaction-info">
+          <div class="transaction-type"><i class="fas fa-arrow-down"></i> Deposit</div>
+          <div class="transaction-date">May 28, 2025</div>
+        </div>
+        <div class="transaction-amount positive">+₹5,000.00</div>
+      </div>
+
+      <div
+        class="transaction"
+        tabindex="0"
+        aria-label="Transfer to Alice of ₹2000 on May 27, 2025"
+      >
+        <div class="transaction-info">
+          <div class="transaction-type"><i class="fas fa-paper-plane"></i> Transfer to Alice</div>
+          <div class="transaction-date">May 27, 2025</div>
+        </div>
+        <div class="transaction-amount negative">-₹2,000.00</div>
+      </div>
+
+      <div class="transaction" tabindex="0" aria-label="Withdrawal of ₹1000 on May 25, 2025">
+        <div class="transaction-info">
+          <div class="transaction-type"><i class="fas fa-arrow-up"></i> Withdrawal</div>
+          <div class="transaction-date">May 25, 2025</div>
+        </div>
+        <div class="transaction-amount negative">-₹1,000.00</div>
+      </div>
+
+      <div
+        class="transaction"
+        tabindex="0"
+        aria-label="Received from Bob ₹3000 on May 23, 2025"
+      >
+        <div class="transaction-info">
+          <div class="transaction-type"><i class="fas fa-arrow-down"></i> Received from Bob</div>
+          <div class="transaction-date">May 23, 2025</div>
+        </div>
+        <div class="transaction-amount positive">+₹3,000.00</div>
+      </div>
+    </section>
+
+    <nav class="bottom-nav" aria-label="Bottom navigation">
+      <div class="nav-item active" aria

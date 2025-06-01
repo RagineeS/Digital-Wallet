@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Wallet - Withdraw</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+  <style>
+    /* Body and container styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4a6cf7 0%, #7d99f0 100%);
+      margin: 0;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 1rem;
+    }
+
+    .container {
+      background: #ffffff;
+      color: #333;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 15px;
+      box-shadow: 0 15px 30px rgba(74, 108, 247, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 90vh;
+    }
+
+    /* Header */
+    .header {
+      background: #4a6cf7;
+      color: white;
+      padding: 1.5rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 8px rgba(74, 108, 247, 0.4);
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 1.5rem;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .back-btn:hover {
+      color: #cbd4f7;
+    }
+
+    /* Content */
+    .content {
+      padding: 2rem 1.5rem;
+      flex-grow: 1;
+    }
+
+    /* Balance card */
+    .balance-card {
+      background: #f0f3ff;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      box-shadow: inset 0 0 10px #d0d9ff;
+    }
+
+    .balance {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #4a6cf7;
+      margin-bottom: 0.25rem;
+    }
+
+    .currency {
+      font-size: 1rem;
+      color: #7d7d7d;
+    }
+
+    /* Form groups */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+      color: #4a4a4a;
+    }
+
+    input[type='number'],
+    input[type='text'],
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: 2px solid #4a6cf7;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      outline-offset: 2px;
+      outline-color: transparent;
+    }
+    input[type='number']:focus,
+    input[type='text']:focus,
+    select:focus {
+      border-color: #2e4bf7;
+      outline-color: #2e4bf7;
+    }
+
+    /* Withdrawal methods */
+    .method-options {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .method {
+      flex: 1;
+      background: #e9ebff;
+      color: #4a6cf7;
+      border-radius: 12px;
+      padding: 1rem 0;
+      text-align: center;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(74, 108, 247, 0.15);
+      border: 2px solid transparent;
+    }
+    .method i {
+      font-size: 1.75rem;
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+    .method.active,
+    .method:hover {
+      background: #4a6cf7;
+      color: white;
+      border-color: #3a53c1;
+      box-shadow: 0 6px 12px rgba(58, 83, 193, 0.5);
+    }
+
+    /* Button */
+    button {
+      width: 100%;
+      background: #4a6cf7;
+      border: none;
+      color: white;
+      padding: 1.2rem;
+      border-radius: 15px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(74, 108, 247, 0.6);
+      transition: background 0.3s ease;
+    }
+    button:disabled {
+      background: #a0b4f7;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    button:hover:not(:disabled) {
+      background: #3a53c1;
+      box-shadow: 0 8px 20px rgba(58, 83, 193, 0.8);
+    }
+
+    /* Help link */
+    .help-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      font-weight: 600;
+      color: #4a6cf7;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .help-link:hover {
+      color: #3a53c1;
+    }
+
+    /* Bottom navigation */
+    .bottom-nav {
+      background: #fff;
+      box-shadow: 0 -4px 15px rgba(74, 108, 247, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0;
+      color: #666;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      position: sticky;
+      bottom: 0;
+      z-index: 100;
+    }
+    .nav-item {
+      color: #666;
+      cursor: pointer;
+      text-align: center;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+    .nav-item.active,
+    .nav-item:hover {
+      color: #4a6cf7;
+    }
+    .nav-item i {
+      font-size: 1.3rem;
+      margin-bottom: 0.2rem;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <header class="header">
+      <a href="dashboard.html" class="back-btn" aria-label="Go back to dashboard">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      Withdraw Funds
+      <div style="width: 1.5rem;"></div>
+    </header>
+
+    <section class="content" aria-label="Withdraw funds form">
+      <div class="balance-card" aria-live="polite" aria-atomic="true">
+        <div class="balance" id="currentBalance">₹20,000.67</div>
+        <div class="currency">Current Balance</div>
+      </div>
+
+      <form id="withdrawForm" novalidate>
+        <div class="form-group">
+          <label for="amount">Amount to Withdraw</label>
+          <input
+            type="number"
+            id="amount"
+            name="amount"
+            placeholder="Enter amount"
+            min="0.01"
+            step="0.01"
+            required
+            aria-describedby="amountHelp"
+          />
+          <small id="amountHelp" style="color: #d93025; display:none;"></small>
+        </div>
+
+        <div class="form-group">
+          <label for="currency">Currency</label>
+          <select id="currency" name="currency" aria-label="Select currency">
+            <option value="INR" selected>INR (₹)</option>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+          </select>
+        </div>
+
+        <fieldset class="form-group" aria-label="Withdrawal method">
+          <legend style="font-weight:600; margin-bottom:0.5rem; color:#4a4a4a;">
+            Withdrawal Method
+          </legend>
+          <div class="method-options" role="radiogroup">
+            <div
+              tabindex="0"
+              class="method active"
+              role="radio"
+              aria-checked="true"
+              data-method="bank"
+            >
+              <i class="fas fa-university"></i> Bank
+            </div>
+            <div
+              tabindex="0"
+              class="method"
+              role="radio"
+              aria-checked="false"
+              data-method="upi"
+            >
+              <i class="fas fa-mobile-alt"></i> UPI
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="form-group">
+          <label for="details">Account Details</label>
+          <input
+            type="text"
+            id="details"
+            name="details"
+            placeholder="Enter bank account or UPI ID"
+            required
+          />
+        </div>
+
+        <button type="submit" id="withdrawBtn" disabled>Withdraw</button>
+      </form>
+
+      <a href="help.html" class="help-link">Need help? Contact Support</a>
+    </section>
+
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+      <div
+        class="nav-item"
+        role="link"
+        tabindex="0"
+        onclick="location.href='dashboard.html'"
+        aria-label="Home"
+      >
+        <i class="fas fa-home"></i> Home
+      </div>
+      <div
+        class="nav-item"
+        role="link"
+        tabindex="0"
+        onclick="location.href='history.html'"
+        aria-label="Transaction History"
+      >
+        <i class="fas fa-history"></i> History
+      </div>
+      <div
+        class="nav-item"
+        role="link"
+        tabindex="0"
+        onclick="location.href='receive.html'"
+        aria-label="Receive Funds"
+      >
+        <i class="fas fa-qrcode"></i> Receive
+      </div>
+      <div
+        class="nav-item"
+        role="link"
+        tabindex="0"
+        onclick="location.href='profile.html'"
+        aria-label="Profile"
+      >
+        <i class="fas fa-user"></i> Profile
+      </div>
+    </nav>
+  </div>
+<script>
+  // Elements
+  const balanceElement = document.getElementById('currentBalance');
+  const amountInput = document.getElementById('amount');
+  const detailsInput = document.getElementById('details');
+  const withdrawBtn = document.getElementById('withdrawBtn');
+  const methods = document.querySelectorAll('.method');
+  const form = document.getElementById('withdrawForm');
+  const amountHelp = document.getElementById('amountHelp');
+  const currencySelect = document.getElementById('currency');
+
+  // Parse current balance (assumes format "₹20,000.67")
+  function parseBalance(text) {
+    return Number(text.replace(/[^0-9.-]+/g, ''));
+  }
+  let currentBalance = parseBalance(balanceElement.textContent);
+
+  // Track selected method
+  let selectedMethod = 'bank';
+
+  // Method selection logic
+  methods.forEach((method) => {
+    method.addEventListener('click', () => {
+      methods.forEach((m) => {
+        m.classList.remove('active');
+        m.setAttribute('aria-checked', 'false');
+      });
+      method.classList.add('active');
+      method.setAttribute('aria-checked', 'true');
+      selectedMethod = method.dataset.method;
+    });
+
+    // Allow keyboard select with Enter or Space
+    method.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        method.click();
+      }
+    });
+  });
+
+  // Validation and enabling button
+  function validateForm() {
+    const amount = parseFloat(amountInput.value);
+    const details = detailsInput.value.trim();
+
+    if (
+      !isNaN(amount) &&
+      amount > 0 &&
+      amount <= currentBalance &&
+      details.length > 0
+    ) {
+      amountHelp.style.display = 'none';
+      withdrawBtn.disabled = false;
+    } else {
+      withdrawBtn.disabled = true;
+
+      // Show overdraft error
+      if (amount > currentBalance) {
+        amountHelp.textContent = 'Insufficient balance for this withdrawal.';
+        amountHelp.style.display = 'block';
+      } else {
+        amountHelp.style.display = 'none';
+      }
+    }
+  }
+
+  amountInput.addEventListener('input', validateForm);
+  detailsInput.addEventListener('input', validateForm);
+
+  // Initial validation call
+  validateForm();
+
+  // Form submission handler (only one, async)
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const amount = parseFloat(amountInput.value);
+    const details = detailsInput.value.trim();
+    const currency = currencySelect.value;
+    const email = localStorage.getItem('userEmail');
+
+    if (amount > currentBalance) {
+      alert('Withdrawal amount exceeds your current balance.');
+      return;
+    }
+    if (!details) {
+      alert('Please enter your account or UPI details.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/wallet/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          amount,
+          currency,
+          method: selectedMethod,
+          details
+        }) 
+      }); 
+      
+      const data = await response.json();
+      if (data.success) {
+        alert(`Withdrawal successful! New balance: ₹${data.balance.toFixed(2)}`);
+        // Add fraud alert if flagged
+        if (data.flagged) {
+          alert(data.message); // "Large withdrawal flagged for review."
+        }
+        currentBalance = data.balance;
+        balanceElement.textContent = `₹${data.balance.toFixed(2)}`;
+        form.reset();
+        withdrawBtn.disabled = true;
+      } else {
+        alert(data.message || 'Withdrawal failed');
+      }
+    } catch (err) {
+      alert('Server error. Please try again later.');
+    }
+  });
+</script>
+
+</body>
+</html>

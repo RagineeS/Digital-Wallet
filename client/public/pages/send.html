@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Wallet - Send (UPI)</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --primary: #1e3a8a; /* Dark Blue */
+      --primary-light: #dbeafe; /* Light Blue */
+      --primary-hover: #2563eb; /* Blue hover */
+      --text: #1f2937; /* Dark gray */
+      --text-light: #4b5563; /* Medium gray */
+      --background: #f9fafb; /* Very light gray */
+      --white: #ffffff;
+      --shadow: 0 8px 20px rgba(30, 58, 138, 0.1);
+      --border-radius: 12px;
+      --transition: all 0.3s ease;
+      --error-color: #dc2626; /* Red */
+      --success-color: #16a34a; /* Green */
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 420px;
+      width: 100%;
+      background: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 90vh;
+      animation: fadeInUp 0.6s ease forwards;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .header {
+      background: var(--primary);
+      color: var(--white);
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(30, 58, 138, 0.2);
+    }
+    .header h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      user-select: none;
+    }
+    .back-btn {
+      color: var(--white);
+      font-size: 1.4rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+    .back-btn:hover {
+      transform: scale(1.15);
+      color: #e0e7ff;
+    }
+    .content {
+      padding: 2rem 2rem 3rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .balance-card {
+      background: var(--primary-light);
+      border-radius: var(--border-radius);
+      padding: 1.8rem 1.6rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+      user-select: none;
+    }
+    .balance {
+      font-size: 2.1rem;
+      font-weight: 700;
+      margin: 0.3rem 0;
+      color: var(--primary);
+      letter-spacing: 0.02em;
+    }
+    .currency {
+      color: var(--primary-hover);
+      font-size: 1.1rem;
+      font-weight: 600;
+      opacity: 0.75;
+    }
+    .form-group {
+      margin-bottom: 1.8rem;
+      position: relative;
+      animation: fadeInUp 0.7s ease forwards;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+      user-select: none;
+    }
+    input,
+    select {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      border: 1.8px solid #d1d5db;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      font-family: "Inter", sans-serif;
+      transition: var(--transition);
+      color: var(--text);
+      background: #fff;
+      box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.05);
+      user-select: text;
+    }
+    input::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
+    }
+    input:focus,
+    select:focus {
+      border-color: var(--primary-hover);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+      background: #fff;
+    }
+    .error {
+      color: var(--error-color);
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+      display: none;
+      position: absolute;
+      bottom: -1.2rem;
+      left: 0;
+      user-select: none;
+    }
+    .method-options {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      user-select: none;
+    }
+    .method {
+      flex: 1;
+      background: var(--primary-light);
+      border-radius: var(--border-radius);
+      padding: 1.1rem 0;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 2.5px solid transparent;
+      box-shadow: 0 2px 5px rgba(30, 58, 138, 0.07);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--primary);
+      user-select: none;
+    }
+    .method i {
+      font-size: 1.6rem;
+      margin-bottom: 0.45rem;
+      transition: color 0.3s ease;
+    }
+    .method:hover {
+      background: var(--primary-light);
+      box-shadow: 0 5px 15px rgba(30, 58, 138, 0.15);
+      border-color: var(--primary-hover);
+      color: var(--primary-hover);
+    }
+    .method.active {
+      background: var(--primary-hover);
+      color: var(--white);
+      border-color: var(--primary-hover);
+      box-shadow: 0 5px 18px rgba(37, 99, 235, 0.4);
+    }
+    .method.active i {
+      color: var(--white);
+    }
+    .qr-scanner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-light);
+      border-radius: var(--border-radius);
+      padding: 1.1rem 1.5rem;
+      margin-bottom: 2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 3px 10px rgba(30, 58, 138, 0.12);
+      user-select: none;
+      font-weight: 600;
+      color: var(--primary-hover);
+      font-size: 1rem;
+    }
+    .qr-scanner:hover {
+      background: #c7dafe;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
+      color: var(--primary);
+    }
+    .qr-scanner i {
+      font-size: 1.9rem;
+      margin-right: 0.8rem;
+      user-select: none;
+      pointer-events: none;
+    }
+    button {
+      width: 100%;
+      padding: 1.1rem;
+      background: var(--primary-hover);
+      color: var(--white);
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.8rem;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
+      transition: var(--transition);
+      user-select: none;
+    }
+    button:hover:not(:disabled) {
+      background: var(--primary);
+      box-shadow: 0 8px 25px rgba(30, 58, 138, 0.7);
+    }
+    button:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      box-shadow: none;
+      color: #64748b;
+    }
+    .help-link {
+      display: block;
+      text-align: center;
+      margin-top: 2rem;
+      color: var(--primary-hover);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+    .help-link:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--white);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.9rem 0;
+      box-shadow: 0 -4px 20px rgba(30, 58, 138, 0.07);
+      user-select: none;
+      z-index: 9999;
+    }
+    .nav-item {
+      text-align: center;
+      color: var(--text-light);
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.85rem;
+      gap: 0.25rem;
+      user-select: none;
+    }
+    .nav-item.active,
+    .nav-item:hover {
+      color: var(--primary-hover);
+    }
+    .nav-item i {
+      font-size: 1.3rem;
+      pointer-events: none;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 460px) {
+      .container {
+        min-height: 100vh;
+        border-radius: 0;
+      }
+      .content {
+        padding: 1.5rem 1.5rem 3rem;
+      }
+      .bottom-nav {
+        padding: 1rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="Send Money Page">
+    <header class="header">
+      <a href="dashboard.html" class="back-btn" aria-label="Go back to dashboard">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <h1>Send Money (Email)</h1>
+      <div style="width: 1.4rem;"></div> <!-- Spacer -->
+    </header>
+
+    <section class="content">
+      <div class="balance-card" aria-live="polite" aria-atomic="true">
+        <div class="balance" id="balance-amount">₹12,345.67</div>
+        <div class="currency">Available Balance</div>
+      </div>
+
+      <div class="form-group">
+        <label for="amount">Amount to Send</label>
+        <input
+          type="number"
+          id="amount"
+          name="amount"
+          placeholder="Enter amount"
+          min="0"
+          step="0.01"
+          aria-describedby="amount-error"
+          aria-required="true"
+          autocomplete="off"
+        />
+        <div id="amount-error" class="error" role="alert">Please enter a valid amount.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="recipient">Recipient Email</label>
+        <input
+          type="text"
+          id="recipient"
+          name="recipient"
+          placeholder="ex@gmail.com"
+          aria-describedby="recipient-error"
+          aria-required="true"
+          autocomplete="off"
+        />
+        <div id="recipient-error" class="error" role="alert">Please enter a valid EMAIL ID.</div>
+      </div>
+
+      <div class="method-options" role="radiogroup" aria-label="Select Payment Method">
+        <div
+          class="method active"
+          role="radio"
+          tabindex="0"
+          aria-checked="true"
+          data-method="Email"
+          title="EMAIL"
+        >
+          <i class="fas fa-university"></i>
+          Email
+        </div>
+        <div
+          class="method"
+          role="radio"
+          tabindex="-1"
+          aria-checked="false"
+          data-method="NetBanking"
+          title="Net Banking"
+        >
+          <i class="fas fa-credit-card"></i>
+          Net Banking
+        </div>
+        <div
+          class="method"
+          role="radio"
+          tabindex="-1"
+          aria-checked="false"
+          data-method="Wallet"
+          title="Wallet Payment"
+        >
+          <i class="fas fa-wallet"></i>
+          Wallet
+        </div>
+      </div>
+
+      <button id="scan-qr" type="button" class="qr-scanner" aria-label="Scan QR code to get UPI ID">
+        <i class="fas fa-qrcode"></i> Scan QR Code
+      </button>
+
+      <button id="send-btn" type="submit" disabled aria-disabled="true">
+        Send Money
+      </button>
+
+      <a href="help.html" class="help-link" aria-label="Help and support">Need help?</a>
+    </section>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <div class="nav-item" role="link" tabindex="0" aria-label="Home">
+      <i class="fas fa-home"></i>
+      Home
+    </div>
+    <div class="nav-item active" role="link" tabindex="0" aria-label="Send Money">
+      <i class="fas fa-paper-plane"></i>
+      Send
+    </div>
+    <div class="nav-item" role="link" tabindex="0" aria-label="Transactions History">
+      <i class="fas fa-list"></i>
+      History
+    </div>
+    <!-- <div class="nav-item" role="link" tabindex="0" aria-label="Settings">
+      <i class="fas fa-cog"></i>
+      Settings
+    </div> -->
+  </nav>
+
+  <script>
+  const amountInput = document.getElementById("amount");
+const recipientInput = document.getElementById("recipient");
+const sendBtn = document.getElementById("send-btn");
+const amountError = document.getElementById("amount-error");
+const recipientError = document.getElementById("recipient-error");
+const methods = document.querySelectorAll(".method");
+let selectedMethod = "Email";
+
+// Toggle active payment method
+methods.forEach((method) => {
+  method.addEventListener("click", () => {
+    methods.forEach((m) => {
+      m.classList.remove("active");
+      m.setAttribute("aria-checked", "false");
+      m.setAttribute("tabindex", "-1");
+    });
+    method.classList.add("active");
+    method.setAttribute("aria-checked", "true");
+    method.setAttribute("tabindex", "0");
+    selectedMethod = method.getAttribute("data-method");
+    validateForm();
+  });
+  method.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      method.click();
+    }
+  });
+});
+
+// Basic validation functions
+function validateAmount() {
+  const val = parseFloat(amountInput.value);
+  if (!val || val <= 0) {
+    amountError.style.display = "block";
+    return false;
+  }
+  amountError.style.display = "none";
+  return true;
+}
+
+function validateRecipient() {
+  // Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const recipient = recipientInput.value.trim();
+  if (!recipient || !emailRegex.test(recipient)) {
+    recipientError.style.display = "block";
+    return false;
+  }
+  recipientError.style.display = "none";
+  return true;
+}
+
+function validateForm() {
+  const isValid = validateAmount() && validateRecipient();
+  sendBtn.disabled = !isValid;
+  sendBtn.setAttribute("aria-disabled", String(!isValid));
+  return isValid;
+}
+
+amountInput.addEventListener("input", validateForm);
+recipientInput.addEventListener("input", validateForm);
+
+// Scan QR placeholder
+document.getElementById("scan-qr").addEventListener("click", () => {
+  alert("QR scanning feature coming soon!");
+});
+
+// Send money - email-based transfer
+sendBtn.addEventListener("click", async () => {
+  if (!validateForm()) return;
+
+  const amount = parseFloat(amountInput.value);
+  const toEmail = recipientInput.value.trim();
+  const fromEmail = localStorage.getItem('userEmail'); // Sender's email
+
+  if (!fromEmail) {
+    alert('You must be logged in to send money.');
+    return;
+  }
+
+  if (fromEmail === toEmail) {
+    alert('You cannot send money to yourself.');
+    return;
+  }
+
+  try {
+    const res = await fetch('/wallet/transfer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fromEmail,
+        toEmail,
+        amount,
+        method: selectedMethod
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert(`Successfully sent ₹${amount} to ${toEmail}. Your new balance: ₹${data.balance.toFixed(2)}`);
+      // Reset form
+      amountInput.value = "";
+      recipientInput.value = "";
+      validateForm();
+      // Optionally update balance display
+      const balanceElement = document.getElementById('currentBalance');
+      if (balanceElement) balanceElement.textContent = `₹${data.balance.toFixed(2)}`;
+    } else {
+      alert(data.message || 'Transfer failed');
+    }
+  } catch (err) {
+    alert('Server error. Please try again later.');
+  }
+});
+
+// Initialize validation
+validateForm();
+
+</script>
+
+</body>
+</html>
